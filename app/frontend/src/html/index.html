@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/photon.min.css">
+    <link rel="stylesheet" href="../styles/index.css">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <div class="window"> -->
+      <div class="window">
+
+        <header class="toolbar toolbar-header draggable-header">
+          <div class="title-container">
+            <h1 class="title">OVPNB Bundler</h1>
+            <div class="toolbar-actions min-close">
+              <div class="btn-group">
+                <button class="btn btn-default">
+                  <span class="icon icon-minus"></span>
+                </button>
+                <button class="btn btn-default cancel">
+                  <span class="icon icon-cancel"></span>
+                </button>
+              </div>
+            </div>
+           
+          </div>
+
+          <div class="toolbar-actions">
+            <button class="btn btn-default" id = "btn-import">
+              <span class="icon icon-plus icon-text"></span>
+              Import
+            </button>
+            <button class="btn btn-default" id="btn-delete">
+              <span class="icon icon-minus icon-text"></span>
+              Delete
+            </button>
+          </div>
+
+        </header>
+
+        <div class="window-content">
+          <div class="droparea">Drop OVPN Files Here OR   
+            <span class="span-browse">  browse </span>
+          </div>
+
+          <div class="list-area">
+            <select id="list-box" class="list-box" name="list-box" size="10" multiple>
+              <!-- <option class="list-item" value="1"><h1>India</h1></option>
+              <option value="2">United States</option>
+              <option value="3">China</option>
+              <option value="4">Italy</option>
+              <option value="5">Germany</option>
+              <option value="6">Canada</option>
+              <option value="7">France</option>
+              <option value="8">United Kingdom</option> -->
+            </select>
+          </div>
+        </div>
+
+        
+        <footer class="background-steel">
+           <form>
+              <div class="filename-container">
+                <label class="label-export">File name: </label>
+                <div class="input-container">
+                  <input type="text" class="form-control" placeholder="Enter file name...">
+
+                  <button class="btn btn-primary btn-export">
+                    Export
+                  </button>
+                </div>
+              </div>
+            </form>
+        </footer>
+   
+        
+      </div>
+
+      
+
+
+   
+      <!-- </div> -->
+      <script>
+        require('../js/index.js')
+      </script>
+ </body>
+</html>

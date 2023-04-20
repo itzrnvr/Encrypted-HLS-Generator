@@ -1,0 +1,108 @@
+.window-content{
+    background-color: #091921;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+}
+
+.droparea {
+height: 300px;
+width: 400px;
+border: 1px dashed gray;
+color: gray;
+display: flex;
+justify-content: center;
+align-items: center;
+margin-top: 5em;
+}
+.hover {
+color: #fff;
+border: 1px dashed #fff;
+}
+.valid {
+color: #fff;
+background-color: green;
+border: 1px solid green;
+}
+.invalid {
+color: #fff;
+background-color: red;
+border: 1px solid red;
+}
+
+.list-area{
+    width: 100%;
+    height: 100%;
+}
+
+.list-box{
+    width: 100%;
+    height: 100%;
+    padding: 32px;
+    background-color: #091921;
+    color: #ffffff;
+}
+
+.list-item{
+    height: 50px;
+    /* background-color: rgb(255, 255, 255); */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 16px;
+    /* border-radius: 6px; */
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.749);
+}
+
+.span-browse{
+    color: tomato;
+    margin-left: 3px;
+}
+
+.draggable-header{
+    -webkit-app-region: drag;
+}
+
+.title-container{
+    display: flex;
+    justify-content: center;
+}
+
+.title{
+   margin-left: auto;
+}
+
+.min-close{
+    margin-left: auto;
+}
+
+.cancel:hover{
+    background-color: red;
+    background: red;
+    color: white;
+}
+
+.background-steel{
+    background-color: #DDDBDD;
+}
+
+.input-container{
+    display: flex;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-bottom: 24px;
+}
+
+.label-export{
+    margin-top: 12px;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.btn-export{
+    margin-right: auto;
+    margin-left: 8px;
+    width: 120px;
+    height: 35px;
+}
