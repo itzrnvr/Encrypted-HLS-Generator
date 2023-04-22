@@ -1,17 +1,67 @@
+const { BrowserView } = require('electron');
 const electron = require('electron')
 const ipc = electron.ipcRenderer
 const {listbox_remove, renderListItems} = require('./handleList')
 
 const droparea = document.querySelector(".droparea");
-const listArea = document.querySelector(".list-area")
+const listBox = document.querySelector(".list-area")
 const importBtn = document.getElementById("btn-import")
+const selectAllBtn = document.getElementById("btn-select")
+const unselectAllBtn = document.getElementById("btn-unselect")
+const exportBtn = document.getElementById("btn-export")
+const browseBtn = document.querySelector('.span-browse')
 const deleteBtn = document.getElementById("btn-delete")
 
-showDropArea()
+
+window.onkeyup = function(e){
+  var pressed = "";
+  if(e.ctrlKey){
+      pressed += "Ctrl";
+  } 
+  pressed += e.keyCode;
+  console.log(pressed);
+
+  if(pressed == 'Ctrl65'){
+    selectAll()
+  } else if(pressed == '46'){
+    listbox_remove('list-box')
+  }
+}
+
+selectAllBtn.addEventListener('click', ()=>{
+  selectAll()
+})
+
+unselectAllBtn.addEventListener('click', ()=>{
+  document.querySelectorAll('.list-item').forEach((item)=>{
+    item.classList.remove('active')
+  })
+})
+
+function selectAll(){
+  document.querySelectorAll('.list-item').forEach((item)=> {
+    item.classList.add('active')
+  })
+}
+
+hideDropArea()
+
+
 
 importBtn.addEventListener('click', ()=>{
     pickFiles()
 })
+
+browseBtn.addEventListener('click', ()=>{
+    pickFiles()
+})
+
+exportBtn.addEventListener('click', (e)=>{
+  e.preventDefault()
+})
+
+
+
 
 function pickFiles(){
    ipc.send('open-filepicker')
@@ -65,6 +115,7 @@ const getFileExtension = (fileName)=>{
     return fileName.slice((Math.max(0, fileName.lastIndexOf(".")) || Infinity) + 1);
 }
 
+
 const render = (file) => {
   droparea.setAttribute("class", "droparea valid");
   droparea.innerText = "Added " + file.name;
@@ -72,11 +123,11 @@ const render = (file) => {
 
 function hideDropArea(){
     droparea.style.display = 'none'
-    listArea.style.display = 'block'
+    // listArea.style.display = 'block'
 }
 
 function showDropArea(){
-    droparea.style.display = 'block'
-    listArea.style.display = 'none'
+    droparea.style.display = 'flex'
+    listBox.style.display = 'none'
 }
 

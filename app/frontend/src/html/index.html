@@ -37,6 +37,18 @@
               <span class="icon icon-minus icon-text"></span>
               Delete
             </button>
+
+            <button class="btn btn-default" id="btn-select">
+              <span class="icon icon-check icon-text"></span>
+              Select All
+            </button>
+
+            <button class="btn btn-default" id="btn-unselect">
+              <span class="icon icon-minus-circled icon-text"></span>
+              Unselect All
+            </button>
+
+        
           </div>
 
         </header>
@@ -46,19 +58,32 @@
             <span class="span-browse">  browse </span>
           </div>
 
-          <div class="list-area">
-            <select id="list-box" class="list-box" name="list-box" size="10" multiple>
-              <!-- <option class="list-item" value="1"><h1>India</h1></option>
-              <option value="2">United States</option>
-              <option value="3">China</option>
-              <option value="4">Italy</option>
-              <option value="5">Germany</option>
-              <option value="6">Canada</option>
-              <option value="7">France</option>
-              <option value="8">United Kingdom</option> -->
-            </select>
+          <div class="list-area" id="list-area">
+            <ul class="list-box" id="list-box">
+            
+              
+            </ul>
           </div>
-        </div>
+
+          
+
+          <!-- <div class="list-area">
+            <select id="list-box" class="list-box" name="list-box" multiple>
+              <option  class="list-item"  class="list-item" value="1"><h1>India</h1></option>
+              <option class="list-item"   value="2">United States</option>
+              <option class="list-item"   value="3">China</option>
+              <option  class="list-item" value="4">Italy</option>
+              <option  class="list-item" value="5">Germany</option>
+              <option  class="list-item" value="6">Canada</option>
+              <option  class="list-item" value="7">France</option>
+              <option  class="list-item" value="8">United Kingdom</option>
+              <option class="list-item"   value="5">Germany</option>
+              <option  class="list-item" value="6">Canada</option>
+              <option class="list-item"   value="7">France</option>
+              <option class="list-item"   value="8">United Kingdom</option>
+            </select>
+          </div> -->
+        </div> 
 
         
         <footer class="background-steel">
@@ -68,7 +93,7 @@
                 <div class="input-container">
                   <input type="text" class="form-control" placeholder="Enter file name...">
 
-                  <button class="btn btn-primary btn-export">
+                  <button class="btn btn-primary btn-export" id="btn-export">
                     Export
                   </button>
                 </div>
@@ -87,5 +112,6 @@
       <script>
         require('../js/index.js')
       </script>
+
  </body>
 </html>
