@@ -101,12 +101,13 @@ btn{
 
 
 .span-browse{
-    color: tomato;
+    color: rgb(75, 168, 225);
     margin-left: 3px;
 }
 
 .span-browse:hover{
-    color: rgb(254, 60, 26);
+    color: rgb(0, 187, 255);
+    border-bottom: #337ab7 1px solid;
 }
 
 .draggable-header{
@@ -120,6 +121,8 @@ btn{
 
 .title{
    margin-left: auto;
+   padding-left: 100px;
+   text-align: center;
 }
 
 .min-close{
@@ -136,6 +139,11 @@ btn{
     background-color: #DDDBDD;
 }
 
+.input-filename{
+    border: #091921 0.5px solid;
+    font-size: medium;
+}
+
 .input-container{
     display: flex;
     padding-left: 16px;
@@ -147,11 +155,12 @@ btn{
     margin-top: 12px;
     margin-left: 16px;
     margin-right: 16px;
+    font-size: small;
 }
 
 .btn-export{
     margin-right: auto;
     margin-left: 8px;
     width: 120px;
-    height: 35px;
+    height: auto;
 }
