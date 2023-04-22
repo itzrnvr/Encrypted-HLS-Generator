@@ -17,10 +17,10 @@
             <h1 class="title">OVPNB Bundler</h1>
             <div class="toolbar-actions min-close">
               <div class="btn-group">
-                <button class="btn btn-default">
+                <button class="btn btn-default" id="btn-minimize">
                   <span class="icon icon-minus"></span>
                 </button>
-                <button class="btn btn-default cancel">
+                <button class="btn btn-default cancel" id="btn-close">
                   <span class="icon icon-cancel"></span>
                 </button>
               </div>
@@ -91,7 +91,7 @@
               <div class="filename-container">
                 <label class="label-export">File name: </label>
                 <div class="input-container">
-                  <input type="text" class="form-control" placeholder="Enter file name...">
+                  <input type="text" class="form-control" id="input-filename" placeholder="Enter file name...">
 
                   <button class="btn btn-primary btn-export" id="btn-export">
                     Export

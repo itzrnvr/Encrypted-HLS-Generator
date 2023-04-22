@@ -1,17 +1,21 @@
 const { BrowserView } = require('electron');
 const electron = require('electron')
+const {remote } = electron
 const ipc = electron.ipcRenderer
 const {listbox_remove, renderListItems} = require('./handleList')
 
 const droparea = document.querySelector(".droparea");
-const listBox = document.querySelector(".list-area")
+const listArea = document.querySelector(".list-area")
 const importBtn = document.getElementById("btn-import")
 const selectAllBtn = document.getElementById("btn-select")
 const unselectAllBtn = document.getElementById("btn-unselect")
 const exportBtn = document.getElementById("btn-export")
 const browseBtn = document.querySelector('.span-browse')
 const deleteBtn = document.getElementById("btn-delete")
+const minimizeBtn = document.getElementById("btn-minimize")
+const closeBtn = document.getElementById("btn-close")
 
+showDropArea()
 
 window.onkeyup = function(e){
   var pressed = "";
@@ -27,6 +31,14 @@ window.onkeyup = function(e){
     listbox_remove('list-box')
   }
 }
+
+closeBtn.addEventListener('click', ()=>{
+  ipc.send('close',)
+})
+
+minimizeBtn.addEventListener('click',()=>{
+  ipc.send('minimize')
+})
 
 selectAllBtn.addEventListener('click', ()=>{
   selectAll()
@@ -44,9 +56,6 @@ function selectAll(){
   })
 }
 
-hideDropArea()
-
-
 
 importBtn.addEventListener('click', ()=>{
     pickFiles()
@@ -58,6 +67,18 @@ browseBtn.addEventListener('click', ()=>{
 
 exportBtn.addEventListener('click', (e)=>{
   e.preventDefault()
+  const files = []
+  document.querySelectorAll('.list-item').forEach((item)=> {
+    files.push({
+      name: item.innerText,
+      path: item.getAttribute('path')
+    })
+  })
+  const data = {
+    bundleName: document.getElementById('input-filename').value,
+    files: files
+  }
+  ipc.send("generateBundle", data)
 })
 
 
@@ -66,6 +87,7 @@ exportBtn.addEventListener('click', (e)=>{
 function pickFiles(){
    ipc.send('open-filepicker')
 }
+
 
 ipc.on('opened-filepicker', (event, args)=> {
   console.log('files from main',args)
@@ -123,11 +145,11 @@ const render = (file) => {
 
 function hideDropArea(){
     droparea.style.display = 'none'
-    // listArea.style.display = 'block'
+    listArea.style.display = 'block'
 }
 
 function showDropArea(){
     droparea.style.display = 'flex'
-    listBox.style.display = 'none'
+    listArea.style.display = 'none'
 }
 

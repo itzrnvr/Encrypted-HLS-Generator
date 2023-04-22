@@ -1,10 +1,14 @@
 const electron = require('electron')
 const { app, BrowserWindow} = electron
 const path = require('path');
-// const { electron } = require('process');
+const archiver = require('archiver');
+const fs = require('fs');
 const url = require('url')
 const ipc = electron.ipcMain
 const dialog = electron.dialog 
+
+archiver.registerFormat('zip-encrypted', require("archiver-zip-encrypted"));
+
 
 let homeWindow, winTwo;
 
@@ -50,6 +54,16 @@ app.on('activate', ()=>{
     }
 })
 
+ipc.on('minimize', () => {
+    homeWindow.minimize()
+    // or depending you could do: win.hide()
+})
+
+ipc.on('close', () => {
+    homeWindow.close()
+    // or depending you could do: win.hide()
+})
+
 ipc.on('open-filepicker', (event)=>{
     dialog.showOpenDialog(homeWindow, {
         properties: ['openFile', 'multiSelections'],
@@ -70,3 +84,22 @@ ipc.on('open-filepicker', (event)=>{
         console.log(err)
       })
 })
+
+ipc.on('generateBundle', (event, args)=>{
+    generateBundle(args)
+})
+
+function generateBundle(data){
+    const output = fs.createWriteStream(__dirname + '/'+data.bundleName+'.ovpnb');
+  
+    let archive = archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: 'XDF8sgeLD,29/J5'});
+    archive.pipe(output);
+    
+    data.files.forEach(file => {
+        archive.file(file.path, { name: file.name });
+    });
+
+    archive.finalize();
+
+   
+}

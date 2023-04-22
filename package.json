@@ -12,5 +12,8 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^24.1.2"
+  },
+  "dependencies": {
+    "archiver-zip-encrypted": "^1.0.11"
   }
 }
