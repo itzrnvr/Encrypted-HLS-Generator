@@ -70,13 +70,17 @@ btn{
 
 
 .list-item {
-    position: relative;
+    /* position: relative; */
     display: block;
     padding: 10px 10px;
     margin-bottom: -1px;
     background-color: #fff;
     border: 1px solid #ddd;
     color: #555
+}
+
+.icon-span{
+    margin-right: 8px;
 }
 
 .list-item.active,
@@ -106,8 +110,8 @@ btn{
 }
 
 .span-browse:hover{
-    color: rgb(0, 187, 255);
-    border-bottom: #337ab7 1px solid;
+    color: rgb(0, 76, 255);
+    border-bottom: rgb(0, 76, 255) 1px solid;
 }
 
 .draggable-header{

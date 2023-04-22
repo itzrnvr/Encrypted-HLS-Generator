@@ -21,6 +21,7 @@ function createWindow(){
         maxHeight:600,
         maxWidth:800,
         frame: false,
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -40,6 +41,10 @@ function createWindow(){
         homeWindow = 'null'
     })
 
+    homeWindow.on('ready-to-show', ()=>{
+        homeWindow.show()
+    })
+
 }
 
 ipc.on('show-error', (event, args) => {
@@ -47,6 +52,7 @@ ipc.on('show-error', (event, args) => {
 })
 
 app.on('ready', createWindow);
+
 app.on('window-all-closed', ()=>{
     if(process.platform !== 'darwin'){
         app.quit()

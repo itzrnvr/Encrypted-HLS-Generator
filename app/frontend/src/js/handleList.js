@@ -36,11 +36,12 @@ function renderListItems(files){
 
 function makeListItem(file, value){
     const li = document.createElement('li')
-    li.innerText = file.name
+
     li.classList.add('list-item')
     li.id = 'list-item'
     li.setAttribute('path', file.filePath)
-
+    
+   
     li.addEventListener('click', ()=> {
         if(li.classList.contains('active')){
             li.classList.remove('active')
@@ -49,7 +50,9 @@ function makeListItem(file, value){
         }
     
     })
-   
+
+
+    li.innerHTML = `<span class="icon icon-doc-text icon-text icon-span"></span> ${file.name}`
 
     return li
 }
