@@ -86,7 +86,7 @@ exportBtn.addEventListener('click', (e)=>{
 function validateExport(){
   let res = false;
   if(document.getElementById('input-filename').value != ""){
-    if(document.querySelectorAll('list-item').length > 0){
+    if(document.querySelectorAll('.list-item').length > 0){
       res = true
     } else {
       ipc.send("show-error", "Please add at least one OVPN file")

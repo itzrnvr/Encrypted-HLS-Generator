@@ -94,7 +94,8 @@ ipc.on('generateBundle', (event, args)=>{
 })
 
 function generateBundle(data){
-    const output = fs.createWriteStream(__dirname + '/'+data.bundleName+'.ovpnb');
+    const filePath = getPathFromDialog()
+    const output = fs.createWriteStream(filePath + '/'+data.bundleName+'.ovpnb');
   
     let archive = archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: 'XDF8sgeLD,29/J5'});
     archive.pipe(output);
@@ -104,6 +105,22 @@ function generateBundle(data){
     });
 
     archive.finalize();
+}
 
-   
+async function getPathFromDialog(){
+    const file = await dialog.showSaveDialog({
+        title: 'Select the File Path to save',
+        defaultPath: path.join(__dirname, '../assets/newbundle.ovpnb'),
+        
+        buttonLabel: 'Save',
+        filters: [
+            {
+                name: 'OVPN Encrypted Bundle',
+                extensions: ['ovpnb']
+            }, ],
+        properties: []
+    })
+
+
+    return file.filePath.toString()
 }
