@@ -42,6 +42,10 @@ function createWindow(){
 
 }
 
+ipc.on('show-error', (event, args) => {
+    dialog.showErrorBox('Error', args) 
+})
+
 app.on('ready', createWindow);
 app.on('window-all-closed', ()=>{
     if(process.platform !== 'darwin'){

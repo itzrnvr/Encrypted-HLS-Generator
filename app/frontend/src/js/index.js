@@ -67,7 +67,8 @@ browseBtn.addEventListener('click', ()=>{
 
 exportBtn.addEventListener('click', (e)=>{
   e.preventDefault()
-  const files = []
+  if(validateExport()){
+    const files = []
   document.querySelectorAll('.list-item').forEach((item)=> {
     files.push({
       name: item.innerText,
@@ -79,7 +80,23 @@ exportBtn.addEventListener('click', (e)=>{
     files: files
   }
   ipc.send("generateBundle", data)
+  }
 })
+
+function validateExport(){
+  let res = false;
+  if(document.getElementById('input-filename').value != ""){
+    if(document.querySelectorAll('list-item').length > 0){
+      res = true
+    } else {
+      ipc.send("show-error", "Please add at least one OVPN file")
+    }
+  } else {
+    ipc.send("show-error", "Bundle file name cannot be empty!")
+  }
+
+  return res
+}
 
 
 
