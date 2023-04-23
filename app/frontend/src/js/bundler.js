@@ -1,3 +1,0 @@
-function createBundle(files){
-    
-}

@@ -51,6 +51,7 @@ ipc.on('show-error', (event, args) => {
     dialog.showErrorBox('Error', args) 
 })
 
+
 app.on('ready', createWindow);
 
 app.on('window-all-closed', ()=>{
@@ -76,6 +77,7 @@ ipc.on('close', () => {
 
 ipc.on('open-filepicker', (event)=>{
     dialog.showOpenDialog(homeWindow, {
+        defaultPath: "C:\\Users\\username",
         properties: ['openFile', 'multiSelections'],
         filters: [,
             { name: 'OVPN', extensions: ['ovpn'] },
@@ -96,12 +98,33 @@ ipc.on('open-filepicker', (event)=>{
 })
 
 ipc.on('generateBundle', (event, args)=>{
-    generateBundle(args)
+    startSaveDialog(args)
 })
 
-function generateBundle(data){
-    const filePath = getPathFromDialog()
-    const output = fs.createWriteStream(filePath + '/'+data.bundleName+'.ovpnb');
+
+function startSaveDialog(data){
+    dialog.showSaveDialog({
+        title: 'Select the File Path to save',
+        defaultPath: path.join(__dirname, `../assets/${data.bundleName}.ovpnb`),
+        
+        buttonLabel: 'Save',
+        filters: [
+            {
+                name: 'OVPN Encrypted Bundle',
+                extensions: ['ovpnb']
+            }, ],
+        properties: []
+    }).then((result)=> {
+        generateBundle(data, result.filePath)
+        console.log(result.filePath)
+    }).catch(err => {
+        console.log(err)
+    })
+
+}
+
+function generateBundle(data, filePath){
+    const output = fs.createWriteStream(filePath);
   
     let archive = archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: 'XDF8sgeLD,29/J5'});
     archive.pipe(output);
@@ -111,22 +134,22 @@ function generateBundle(data){
     });
 
     archive.finalize();
+
+    openSuccessDialog(filePath)
+   
 }
 
-async function getPathFromDialog(){
-    const file = await dialog.showSaveDialog({
-        title: 'Select the File Path to save',
-        defaultPath: path.join(__dirname, '../assets/newbundle.ovpnb'),
-        
-        buttonLabel: 'Save',
-        filters: [
-            {
-                name: 'OVPN Encrypted Bundle',
-                extensions: ['ovpnb']
-            }, ],
-        properties: []
-    })
-
-
-    return file.filePath.toString()
+function openSuccessDialog(filePath){
+    const options = {
+        type: 'info',
+        icon: path.join(__dirname, `/assets/check3.png`),
+        title: 'Success',
+        message: 'Bundle generated and successfully exported',
+        detail: `Exported to: ${filePath}`,
+      };
+    
+      dialog.showMessageBox(homeWindow, options).then((res)=>{
+        console.log('closed')
+      });
 }
+
