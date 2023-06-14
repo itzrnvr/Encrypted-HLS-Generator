@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const { isModuleNamespaceObject } = require('util/types');
 const ffmpegPath = require('ffmpeg-static').replace(
@@ -20,10 +21,12 @@ const resolutions = [
   { width: 1920, height: 1080 }
 ];
 
-const keyInfoFilePath = 'D:\\Projects\\feelance\\upwork\\encryptedHlsGenerated\\Encrypted-HLS-Generator\\enc.keyinfo';
+const keyInfoFilePath = path.join(__dirname, `../../enc.keyinfo`);
 
 // Generate encrypted HLS with multiple video resolutions
-function generateEncryptedHLS(inputFilePath, outputDirectory, outputFileName = "output") {
+
+function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory,) {
+  const outFilePath = fs.mkdir(`${outputDirectory}/inputF`,callback);
   ffmpeg()
   .input(inputFilePath)
   .addOutputOptions([
@@ -33,12 +36,12 @@ function generateEncryptedHLS(inputFilePath, outputDirectory, outputFileName = "
     '-s:v:0 640x360', '-c:v:0 libx264', '-b:v:0 365k',
     '-s:v:1 960x540', '-c:v:1 libx264', '-b:v:1 2000k',
     '-c:a copy',
-    '-f hls', '-hls_time 6', '-hls_list_size 0',
-    '-hls_segment_filename v%v/fileSequence%d.ts',
+    '-f hls', '-hls_time 10', '-hls_list_size 0', `-hls_key_info_file ${keyInfoFilePath}`,
+    `-hls_segment_filename ${outputDirectory}/v%v/fileSequence%d.ts`,
     '-master_pl_name master.m3u8'
   ])
   .outputOption('-var_stream_map', 'v:0,a:0 v:1,a:1')
-  .output('v%v/prog_index.m3u8')
+  .output(`${outputDirectory}/v%v/prog_index.m3u8`)
   .on('error', function(err, stdout, stderr) {
     console.log("ffmpeg stdout:\n" + stdout);
     console.log("ffmpeg stderr:\n" + stderr);

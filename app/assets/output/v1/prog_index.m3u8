@@ -1,0 +1,16 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-TARGETDURATION:10
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-KEY:METHOD=AES-128,URI="https://firebasestorage.googleapis.com/v0/b/stream-46b9f.appspot.com/o/newsystem%2Fenc.key?alt=media&token=6bf60de2-4bbf-48e0-9be6-51543ab70161",IV=0xecd0d06eaf884d8226c33928e87efa33
+#EXTINF:10.400000,
+fileSequence0.ts
+#EXTINF:9.600000,
+fileSequence1.ts
+#EXTINF:10.400000,
+fileSequence2.ts
+#EXTINF:9.600000,
+fileSequence3.ts
+#EXTINF:2.533333,
+fileSequence4.ts
+#EXT-X-ENDLIST
