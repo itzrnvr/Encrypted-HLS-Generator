@@ -1,14 +1,12 @@
 const electron = require('electron')
 const { app, BrowserWindow} = electron
 const path = require('path');
-const archiver = require('archiver');
 const fs = require('fs');
 const url = require('url')
 const ipc = electron.ipcMain
 const dialog = electron.dialog 
 
-archiver.registerFormat('zip-encrypted', require("archiver-zip-encrypted"));
-
+const processVideo = require('./utils/processVideo')
 
 let homeWindow, winTwo;
 
@@ -80,7 +78,7 @@ ipc.on('open-filepicker', (event)=>{
         defaultPath: "C:\\Users\\username",
         properties: ['openFile', 'multiSelections'],
         filters: [,
-            { name: 'OVPN', extensions: ['ovpn'] },
+            { name: 'MP4', extensions: ['mp4'] },
           ]
       }).then(result => {
         console.log(result.canceled)
@@ -103,48 +101,44 @@ ipc.on('generateBundle', (event, args)=>{
 
 
 function startSaveDialog(data){
-    dialog.showSaveDialog({
-        title: 'Select the File Path to save',
-        defaultPath: path.join(__dirname, `../assets/${data.bundleName}.ovpnb`),
-        
-        buttonLabel: 'Save',
-        filters: [
-            {
-                name: 'OVPN Encrypted Bundle',
-                extensions: ['ovpnb']
-            }, ],
-        properties: []
+    console.log('data', data)
+    dialog.showOpenDialog({
+        title: 'Select select a location',
+        defaultPath: path.join(__dirname, `../assets`),
+        properties: ['openDirectory'],
+        buttonLabel: 'Pick',
     }).then((result)=> {
-        generateBundle(data, result.filePath)
-        console.log(result.filePath)
+        processVideo.generateEncryptedHLS(data.files[0].path, result.filePaths[0])
+        console.log('result', result.filePaths)
+       //openSuccessDialog(filePath)
     }).catch(err => {
         console.log(err)
     })
 
 }
 
-function generateBundle(data, filePath){
-    const output = fs.createWriteStream(filePath);
+// function generateBundle(data, filePath){
+//     const output = fs.createWriteStream(filePath);
   
-    let archive = archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: 'XDF8sgeLD,29/J5'});
-    archive.pipe(output);
+//     let archive = archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: 'XDF8sgeLD,29/J5'});
+//     archive.pipe(output);
     
-    data.files.forEach(file => {
-        archive.file(file.path, { name: file.name });
-    });
+//     data.files.forEach(file => {
+//         archive.file(file.path, { name: file.name });
+//     });
 
-    archive.finalize();
+//     archive.finalize();
 
-    openSuccessDialog(filePath)
+//     openSuccessDialog(filePath)
    
-}
+// }
 
 function openSuccessDialog(filePath){
     const options = {
         type: 'info',
         icon: path.join(__dirname, `/assets/check3.png`),
         title: 'Success',
-        message: 'Bundle generated and successfully exported',
+        message: 'Files encrypted and exported successfully',
         detail: `Exported to: ${filePath}`,
       };
     

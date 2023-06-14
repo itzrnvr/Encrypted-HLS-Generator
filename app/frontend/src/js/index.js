@@ -89,7 +89,7 @@ function validateExport(){
     if(document.querySelectorAll('.list-item').length > 0){
       res = true
     } else {
-      ipc.send("show-error", "Please add at least one OVPN file")
+      ipc.send("show-error", "Please add at least one .mp4 file")
     }
   } else {
     ipc.send("show-error", "Bundle file name cannot be empty!")
@@ -108,11 +108,11 @@ function pickFiles(){
 
 ipc.on('opened-filepicker', (event, args)=> {
   console.log('files from main',args)
-  const ovpnFiles = getOvpnFiles(args);
-  console.log(ovpnFiles)
-  if(ovpnFiles.length > 0){
+  const mp4Files = getMp4Files(args);
+  console.log(mp4Files)
+  if(mp4Files.length > 0){
     hideDropArea();
-    renderListItems(ovpnFiles)
+    renderListItems(mp4Files)
   }
 })
 
@@ -133,11 +133,11 @@ droparea.addEventListener("drop", (e) => {
 //   console.log(ext)
 
   const files = Array.from(e.dataTransfer.files);
-  const ovpnFiles = getOvpnFiles(files);
-  console.log(ovpnFiles)
-  if(ovpnFiles.length > 0){
+  const mp4Files = getMp4Files(files);
+  console.log(mp4Files)
+  if(mp4Files.length > 0){
     hideDropArea();
-    renderListItems(ovpnFiles)
+    renderListItems(mp4Files)
   }
 });
 
@@ -145,8 +145,8 @@ deleteBtn.addEventListener('click', ()=>{
     listbox_remove('list-box')
 })
 
-const getOvpnFiles = (fileArr) => {
-    return fileArr.filter((file)=> getFileExtension(file.name) == "ovpn")
+const getMp4Files = (fileArr) => {
+    return fileArr.filter((file)=> getFileExtension(file.name) == "mp4")
 }
 
 
