@@ -107,39 +107,47 @@ function startSaveDialog(data){
     console.log('data', data)
     dialog.showOpenDialog({
         title: 'Select select a location',
-        defaultPath: path.join(__dirname, `../assets`),
+        defaultPath: path.join(__dirname, `/app/assets`),
         properties: ['openDirectory'],
         buttonLabel: 'Pick',
     }).then((result)=> {
         //event.sender.send('startedGeneration')
         homeWindow.webContents.send('startedGeneration')
         const progressBar = makeProgressBar()
-        processVideo.generateEncryptedHLS(data.files[0].name, 
-            data.files[0].path, 
-            result.filePaths[0], 
-            (event, data) => {
-                switch(event){
-                    case 'progress':
-                        console.log('progress', data)
-                        console.log('progress', data.progress)
-                        console.log('progress', Math.round(data.percent))
-                        
-                        if(!progressBar.isCompleted()){
-                            progressBar.value = Math.round(data.percent);
-                          }
-                        break
-                    case 'end':
-                        console.log("ended")
-                        homeWindow.webContents.send('generationComplete')
-                        break
-                    case 'error':
-                        progressBar.close()
-                        homeWindow.webContents.send('generationComplete')
-                    default:
-                        console.log("default")
-                }
-            })
-        console.log('result', result.filePaths)
+        try{
+            processVideo.generateEncryptedHLS(data.files[0].name, 
+                data.files[0].path, 
+                result.filePaths[0], 
+                (event, data) => {
+                    switch(event){
+                        case 'progress':
+                            // console.log('progress', data)
+                            // console.log('progress', data.progress)
+                            // console.log('progress', Math.round(data.percent))
+                            
+                            if(!progressBar.isCompleted()){
+                                progressBar.value = Math.round(data.percent);
+                              }
+                            break
+                        case 'end':
+                            console.log("ended")
+                            homeWindow.webContents.send('generationComplete')
+                            break
+                        case 'error':
+                            progressBar.close()
+                            showErrorDialog(data)
+                            homeWindow.webContents.send('generationComplete')
+                        default:
+                            console.log("default")
+                    }
+                })
+            console.log('result', result.filePaths)
+        } catch(err){
+         showErrorDialog(err)
+         progressBar.close()
+         homeWindow.webContents.send('generationComplete')
+        }
+   
        //openSuccessDialog(filePath)
     }).catch(err => {
         console.log(err)
@@ -205,6 +213,19 @@ function openSuccessDialog(filePath){
         title: 'Success',
         message: 'Files encrypted and exported successfully',
         detail: `Exported to: ${filePath}`,
+      };
+    
+      dialog.showMessageBox(homeWindow, options).then((res)=>{
+        console.log('closed')
+      });
+}
+
+function showErrorDialog(err){
+    const options = {
+        type: 'error',
+        title: 'Something went wrong!',
+        message: 'An application error occured, please report to developer.',
+        detail: `Error: ${err}`,
       };
     
       dialog.showMessageBox(homeWindow, options).then((res)=>{
