@@ -15,6 +15,33 @@ const deleteBtn = document.getElementById("btn-delete")
 const minimizeBtn = document.getElementById("btn-minimize")
 const closeBtn = document.getElementById("btn-close")
 
+const myModal = new HystModal({
+  linkAttributeName: 'data-hystmodal',
+    closeOnOverlay: false,
+    closeOnEsc: false, 
+    backscroll: false,
+    catchFocus: true,
+    waitTransitions: true,
+    closeOnEsc: false,
+    beforeOpen: function(modal){
+        console.log('Message before opening the modal');
+        console.log(modal); //modal window object
+    },
+    afterClose: function(modal){
+        console.log('Message after modal has closed');
+        console.log(modal); //modal window object
+    },
+});
+
+
+ipc.on('startedGeneration', (event, args)=> {
+  myModal.open('#myModal')
+})
+
+ipc.on('generationComplete', (event, args)=> {
+  myModal.close()
+})
+
 showDropArea()
 
 window.onkeyup = function(e){
@@ -66,7 +93,7 @@ browseBtn.addEventListener('click', ()=>{
 })
 
 exportBtn.addEventListener('click', (e)=>{
-  e.preventDefault()
+  console.log('export clicked')
   if(validateExport()){
     const files = []
   document.querySelectorAll('.list-item').forEach((item)=> {
@@ -76,7 +103,6 @@ exportBtn.addEventListener('click', (e)=>{
     })
   })
   const data = {
-    bundleName: document.getElementById('input-filename').value,
     files: files
   }
   ipc.send("generateBundle", data)
@@ -85,14 +111,10 @@ exportBtn.addEventListener('click', (e)=>{
 
 function validateExport(){
   let res = false;
-  if(document.getElementById('input-filename').value != ""){
-    if(document.querySelectorAll('.list-item').length > 0){
-      res = true
-    } else {
-      ipc.send("show-error", "Please add at least one .mp4 file")
-    }
+  if(document.querySelectorAll('.list-item').length > 0){
+    res = true
   } else {
-    ipc.send("show-error", "Bundle file name cannot be empty!")
+    ipc.send("show-error", "Please add at least one .mp4 file")
   }
 
   return res
@@ -115,6 +137,7 @@ ipc.on('opened-filepicker', (event, args)=> {
     renderListItems(mp4Files)
   }
 })
+
 
 droparea.addEventListener("dragover", (e) => {
   e.preventDefault();

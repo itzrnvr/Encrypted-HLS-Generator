@@ -5,12 +5,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/photon.min.css">
+    <link rel="stylesheet" href="../styles/hystmodal.min.css">
     <link rel="stylesheet" href="../styles/index.css">
     <title>Document</title>
 </head>
 <body>
     <!-- <div class="window"> -->
       <div class="window">
+
+        <div class="hystmodal" id="myModal" aria-hidden="true">
+          <div class="hystmodal__wrap">
+              <div class="hystmodal__window" role="dialog" aria-modal="true">
+                <div class="hystmodal__styled">
+                  <div class="exportIndicatorModalContent">
+                    <div class="spinner">
+                      <div class="spinner-wrapper">
+                        <div class="rotator">
+                          <div class="inner-spin"></div>
+                          <div class="inner-spin"></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="exportIndicatorModalContentText">Generating Encrypted Streams. Please do not close the window.</div>
+                  </div>
+                </div>
+                  <!-- <button data-hystclose class="hystmodal__close">Закрыть</button> -->
+                  <!-- You modal HTML markup -->
+              </div>
+          </div>
+      </div>
 
         <header class="toolbar toolbar-header draggable-header">
           <div class="title-container">
@@ -46,6 +69,11 @@
             <button class="btn btn-default" id="btn-unselect">
               <span class="icon icon-minus-circled icon-text"></span>
               Unselect All
+            </button>
+
+            <button class="btn btn-default btn-primary" id="btn-export">
+              <span class="icon icon-export icon-text" style="color: white"></span>
+              Export
             </button>
 
         
@@ -90,7 +118,7 @@
 
         
       
-        <footer class="background-steel">
+        <!-- <footer class="background-steel">
            <form>
               <div class="filename-container">
                 <label class="label-export">File name: </label>
@@ -103,7 +131,7 @@
                 </div>
               </div>
             </form>
-        </footer>
+        </footer> -->
    
         
       </div>
@@ -113,6 +141,9 @@
 
    
       <!-- </div> -->
+      <script>
+        require('../js/hystmodal.min.js')
+      </script>
       <script>
         require('../js/index.js')
       </script>

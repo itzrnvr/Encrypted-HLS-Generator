@@ -14,6 +14,7 @@
     "electron": "^24.1.2"
   },
   "dependencies": {
+    "electron-progressbar": "^2.1.0",
     "ffmpeg-static": "^5.1.0",
     "ffprobe-static": "^3.1.0",
     "fluent-ffmpeg": "^2.1.2",

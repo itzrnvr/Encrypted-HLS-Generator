@@ -5,6 +5,7 @@ const fs = require('fs');
 const url = require('url')
 const ipc = electron.ipcMain
 const dialog = electron.dialog 
+const ProgressBar = require('electron-progressbar');
 
 const processVideo = require('./utils/processVideo')
 
@@ -42,6 +43,8 @@ function createWindow(){
     homeWindow.on('ready-to-show', ()=>{
         homeWindow.show()
     })
+
+
 
 }
 
@@ -108,7 +111,34 @@ function startSaveDialog(data){
         properties: ['openDirectory'],
         buttonLabel: 'Pick',
     }).then((result)=> {
-        processVideo.generateEncryptedHLS(data.files[0].name, data.files[0].path, result.filePaths[0])
+        //event.sender.send('startedGeneration')
+        homeWindow.webContents.send('startedGeneration')
+        const progressBar = makeProgressBar()
+        processVideo.generateEncryptedHLS(data.files[0].name, 
+            data.files[0].path, 
+            result.filePaths[0], 
+            (event, data) => {
+                switch(event){
+                    case 'progress':
+                        console.log('progress', data)
+                        console.log('progress', data.progress)
+                        console.log('progress', Math.round(data.percent))
+                        
+                        if(!progressBar.isCompleted()){
+                            progressBar.value = Math.round(data.percent);
+                          }
+                        break
+                    case 'end':
+                        console.log("ended")
+                        homeWindow.webContents.send('generationComplete')
+                        break
+                    case 'error':
+                        progressBar.close()
+                        homeWindow.webContents.send('generationComplete')
+                    default:
+                        console.log("default")
+                }
+            })
         console.log('result', result.filePaths)
        //openSuccessDialog(filePath)
     }).catch(err => {
@@ -132,6 +162,41 @@ function startSaveDialog(data){
 //     openSuccessDialog(filePath)
    
 // }
+
+function makeProgressBar(){
+    const progressBar = new ProgressBar({
+        indeterminate: false,
+        browserWindow: {
+            parent: homeWindow,
+            modal: true
+        },
+        text: 'Generating Encrypted Stream...',
+        detail: 'Please do not close the window'
+      });
+
+      progressBar
+      .on('completed', function() {
+        console.info(`completed...`);
+        progressBar.detail = 'Task completed. Exiting...';
+      })
+      .on('aborted', function(value) {
+        console.info(`aborted... ${value}`);
+      })
+      .on('progress', function(value) {
+        progressBar.detail = `Progress: ${value}%`;
+      });
+    
+    // launch a task and increase the value of the progress bar for each step completed of a big task;
+    // the progress bar is set to completed when it reaches its maxValue (default maxValue: 100);
+    // ps: setInterval is used here just to simulate the progress of a task
+    // setInterval(function() {
+    //   if(!progressBar.isCompleted()){
+    //     progressBar.value += 1;
+    //   }
+    // }, 1000);
+
+    return progressBar
+}
 
 function openSuccessDialog(filePath){
     const options = {
