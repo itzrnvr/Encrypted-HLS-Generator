@@ -25,8 +25,15 @@ const keyInfoFilePath = path.join(__dirname, `../../enc.keyinfo`);
 
 // Generate encrypted HLS with multiple video resolutions
 
+const cleanName = function(name) {
+  name = name.replace(/\s+/gi, '-'); // Replace white space with dash
+  return name.replace(/[^a-zA-Z0-9\-]/gi, ''); // Strip any special charactere
+};
+
+
 function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory,) {
-  const outFilePath = fs.mkdir(`${outputDirectory}/inputF`,callback);
+  const outFilePath = `${outputDirectory}/${cleanName(path.parse(inputFileName).name)}`
+  fs.mkdirSync(outFilePath);
   ffmpeg()
   .input(inputFilePath)
   .addOutputOptions([
@@ -37,11 +44,11 @@ function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory,) {
     '-s:v:1 960x540', '-c:v:1 libx264', '-b:v:1 2000k',
     '-c:a copy',
     '-f hls', '-hls_time 10', '-hls_list_size 0', `-hls_key_info_file ${keyInfoFilePath}`,
-    `-hls_segment_filename ${outputDirectory}/v%v/fileSequence%d.ts`,
+    `-hls_segment_filename ${outFilePath}/v%v/fileSequence%d.ts`,
     '-master_pl_name master.m3u8'
   ])
   .outputOption('-var_stream_map', 'v:0,a:0 v:1,a:1')
-  .output(`${outputDirectory}/v%v/prog_index.m3u8`)
+  .output(`${outFilePath}/v%v/prog_index.m3u8`)
   .on('error', function(err, stdout, stderr) {
     console.log("ffmpeg stdout:\n" + stdout);
     console.log("ffmpeg stderr:\n" + stderr);

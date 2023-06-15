@@ -108,7 +108,7 @@ function startSaveDialog(data){
         properties: ['openDirectory'],
         buttonLabel: 'Pick',
     }).then((result)=> {
-        processVideo.generateEncryptedHLS(data.files[0].path, result.filePaths[0])
+        processVideo.generateEncryptedHLS(data.files[0].name, data.files[0].path, result.filePaths[0])
         console.log('result', result.filePaths)
        //openSuccessDialog(filePath)
     }).catch(err => {
