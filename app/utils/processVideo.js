@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const { isModuleNamespaceObject } = require('util/types');
+const { generateKey } = require('crypto');
 const ffmpegPath = require('ffmpeg-static').replace(
     'app.asar',
     'app.asar.unpacked'
@@ -21,24 +22,38 @@ const resolutions = [
   { width: 1920, height: 1080 }
 ];
 
-const keyInfoFilePath = path.join(__dirname, `../../enc.keyinfo`);
+const keyInfoFilePath = path.join(__dirname, `../assets/enc.keyinfo`);
+
+const generateKeyInfo = ({keyUrl, keyPath, keyIV}) => {
+  const stream = fs.createWriteStream(keyInfoFilePath);
+  stream.once('open', function(fd) {
+    stream.write(`${keyUrl}\n`);
+    stream.write(`${keyPath}\n`);
+    stream.write(`${keyIV}`);
+    stream.end();
+  });
+}
+
+
 
 // Generate encrypted HLS with multiple video resolutions
-
 const cleanName = function(name) {
   name = name.replace(/\s+/gi, '-'); // Replace white space with dash
   return name.replace(/[^a-zA-Z0-9\-]/gi, ''); // Strip any special charactere
 };
 
 
-function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory, callback) {
+function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory, keyData, callback) {
+  console.log(keyData)
+  generateKeyInfo(keyData)
+
   const outFilePath = `${outputDirectory}/${cleanName(path.parse(inputFileName).name)}`
   fs.mkdirSync(outFilePath);
   console.log(outFilePath)
   ffmpeg()
   .input(inputFilePath)
   .addOutputOptions([
-    '-preset slow', '-g 48', '-sc_threshold 0',
+    '-preset veryfast', '-g 48', '-sc_threshold 0',
     '-map 0:0', '-map 0:1',
     '-map 0:0', '-map 0:1',
     '-map 0:0', '-map 0:1',
@@ -48,7 +63,7 @@ function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory, cal
     '-s:v:2 1280x720', '-c:v:2 libx264', '-b:v:2 4000k',
     '-s:v:3 1920x1080', '-c:v:3 libx264', '-b:v:3 8000k',
     '-c:a copy',
-    '-f hls', '-hls_time 10', '-hls_list_size 0', `-hls_key_info_file ${keyInfoFilePath}`,
+    '-f hls', '-hls_time 3', '-hls_list_size 0', `-hls_key_info_file ${keyInfoFilePath}`,
     `-hls_segment_filename ${outFilePath}/v%v/fileSequence%d.ts`,
     '-master_pl_name master.m3u8'
   ])
@@ -61,6 +76,8 @@ function generateEncryptedHLS(inputFileName, inputFilePath, outputDirectory, cal
     callback('progress', progress)
   })
   .on('error', function(err, stdout, stderr) {
+    callback('error', stderr)
+    callback('error', stdout)
     callback('error', err)
     console.log("ffmpeg stdout:\n" + stdout);
     console.log("ffmpeg stderr:\n" + stderr);

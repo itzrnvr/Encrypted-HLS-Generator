@@ -7,7 +7,8 @@ const ipc = electron.ipcMain
 const dialog = electron.dialog 
 const ProgressBar = require('electron-progressbar');
 
-const processVideo = require('./utils/processVideo')
+const processVideo = require('./utils/processVideo');
+const { createConnection } = require('net');
 
 let homeWindow, winTwo;
 
@@ -80,8 +81,8 @@ ipc.on('open-filepicker', (event)=>{
     dialog.showOpenDialog(homeWindow, {
         defaultPath: "C:\\Users\\username",
         properties: ['openFile', 'multiSelections'],
-        filters: [,
-            { name: 'MP4', extensions: ['mp4'] },
+        filters: [
+            { name: 'Mp4 Media files', extensions: ['mp4'] },
           ]
       }).then(result => {
         console.log(result.canceled)
@@ -103,57 +104,105 @@ ipc.on('generateBundle', (event, args)=>{
 })
 
 
+ipc.on('showErr', (event, {type, err})=>{
+    if(type == 'MissingField') {
+        showNewErrorDialog(type,  'Required Field Empty', err)
+    } else if (type == 'NoImplementation') {
+        showNewErrorDialog(type,  'Feature Pending', err)
+    } else if (type == 'InvalidURL'){
+        showNewErrorDialog(type, "Key Url seems invalid", err)
+    }
+})
+
+
 function startSaveDialog(data){
     console.log('data', data)
     dialog.showOpenDialog({
         title: 'Select select a location',
-        defaultPath: path.join(__dirname, `/app/assets`),
         properties: ['openDirectory'],
         buttonLabel: 'Pick',
-    }).then((result)=> {
-        //event.sender.send('startedGeneration')
-        homeWindow.webContents.send('startedGeneration')
-        const progressBar = makeProgressBar()
-        try{
-            processVideo.generateEncryptedHLS(data.files[0].name, 
-                data.files[0].path, 
-                result.filePaths[0], 
-                (event, data) => {
-                    switch(event){
-                        case 'progress':
-                            // console.log('progress', data)
-                            // console.log('progress', data.progress)
-                            // console.log('progress', Math.round(data.percent))
-                            
-                            if(!progressBar.isCompleted()){
-                                progressBar.value = Math.round(data.percent);
-                              }
-                            break
-                        case 'end':
-                            console.log("ended")
-                            homeWindow.webContents.send('generationComplete')
-                            break
-                        case 'error':
-                            progressBar.close()
-                            showErrorDialog(data)
-                            homeWindow.webContents.send('generationComplete')
-                        default:
-                            console.log("default")
-                    }
-                })
-            console.log('result', result.filePaths)
-        } catch(err){
-         showErrorDialog(err)
-         progressBar.close()
-         homeWindow.webContents.send('generationComplete')
+    }).then( async (result) => {
+        for (let i = 0; i < data.files.length; i++) {
+            homeWindow.webContents.send('startedGeneration')
+            const progressBar = makeProgressBar()
+            await generateEncryptedStream({
+                name: data.files[i].name, 
+                path: data.files[i].path, 
+                outputDir: result.filePaths[0], 
+                keyData: data.keyData
+            }, (progress) => {
+                if(!progressBar.isCompleted()){
+                    progressBar.value = progress
+                }
+            }).catch(err => {
+                homeWindow.webContents.send('generationComplete')
+                showErrorDialog(err)
+                progressBar.close()
+            })
+            homeWindow.webContents.send('generationComplete')
         }
-   
-       //openSuccessDialog(filePath)
+        
+        //openSuccessDialog()
     }).catch(err => {
         console.log(err)
+        homeWindow.webContents.send('generationComplete')
     })
 
 }
+
+
+
+
+const generateEncryptedStream = (fileDat, progress) => {
+    return new Promise((resolve, reject) => {
+        try{
+            processVideo.generateEncryptedHLS(fileDat.name, 
+                fileDat.path, 
+                fileDat.outputDir,
+                fileDat.keyData, 
+                (event, data) => {
+                    switch(event) {
+                        case 'progress':
+                            progress(Math.round(data.percent))
+                            break
+                        case 'end':
+                            resolve('success')
+                            break
+                        case 'error':
+                            reject(data)
+                        default:
+                            console.log("default")
+                    }
+                }
+            )
+        } catch(err){
+            reject(err)
+        }
+    })
+}
+
+
+// const generateEncryptedStream = () => {
+//     processVideo.generateEncryptedHLS(data.files[0].name, 
+//         data.files[0].path, 
+//         result.filePaths[0], 
+//         (event, data) => {
+//             switch(event){
+//                 case 'progress':
+                    // if(!progressBar.isCompleted()){
+                    //     progressBar.value = Math.round(data.percent);
+                    //   }
+//                     break
+//                 case 'end':
+//                     console.log("ended")
+//                     break
+//                 case 'error':
+//                     reject(data)
+//                 default:
+//                     console.log("default")
+//             }
+//         })
+// }
 
 // function generateBundle(data, filePath){
 //     const output = fs.createWriteStream(filePath);
@@ -193,32 +242,37 @@ function makeProgressBar(){
       .on('progress', function(value) {
         progressBar.detail = `Progress: ${value}%`;
       });
-    
-    // launch a task and increase the value of the progress bar for each step completed of a big task;
-    // the progress bar is set to completed when it reaches its maxValue (default maxValue: 100);
-    // ps: setInterval is used here just to simulate the progress of a task
-    // setInterval(function() {
-    //   if(!progressBar.isCompleted()){
-    //     progressBar.value += 1;
-    //   }
-    // }, 1000);
 
     return progressBar
 }
 
-function openSuccessDialog(filePath){
+function openSuccessDialog(){
     const options = {
         type: 'info',
         icon: path.join(__dirname, `/assets/check3.png`),
         title: 'Success',
         message: 'Files encrypted and exported successfully',
-        detail: `Exported to: ${filePath}`,
       };
     
       dialog.showMessageBox(homeWindow, options).then((res)=>{
         console.log('closed')
       });
 }
+
+function showNewErrorDialog(title, message, err){
+    const options = {
+        type: 'error',
+        title: title,
+        message: message,
+        detail: `Error: ${err}`,
+      };
+      homeWindow.webContents.send('generationComplete')
+      dialog.showMessageBox(homeWindow, options).then((res)=>{
+        console.log('closed')
+      });
+}
+
+
 
 function showErrorDialog(err){
     const options = {
@@ -227,9 +281,12 @@ function showErrorDialog(err){
         message: 'An application error occured, please report to developer.',
         detail: `Error: ${err}`,
       };
-    
+      homeWindow.webContents.send('generationComplete')
       dialog.showMessageBox(homeWindow, options).then((res)=>{
         console.log('closed')
       });
 }
+
+
+// electron-packager . Encrypted-Stream-Generator --platform-win32 --asar  pack . app.asar --unpack-dir "node_modules" && rd "app.asar.unpacked" /s /q
 

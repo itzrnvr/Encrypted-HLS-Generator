@@ -35,6 +35,71 @@
           </div>
       </div>
 
+      <div class="hystmodal" id="modalKeyInfo" aria-hidden="true">
+          <div class="hystmodal__wrap">
+              <div class="hystmodal__window" style="padding: 16px; 
+              border-radius: 6px; 
+              border-collapse: separate;
+              " role="dialog" aria-modal="true">
+                  <button data-hystclose class="hystmodal__close" syle="border: none">Close</button>
+                  <!-- You modal HTML markup -->
+                  <div>
+                    <form class="padded-less">
+                      <div class="form-group">
+                        <label>Enter the URL to the key</label>
+                        <input type="text" id="inputKeyUrl" class="form-control" placeholder="https://url-to-the-key.com">
+                      </div>
+                      <div class="form-group">
+                        <label>Select the key</label>
+                        <input type="file" id="inputKeyPath"  name="OpenSSL Key" accept=".key" class="form-control" placeholder="Select key file">
+                      </div>
+                      <div class="form-group">
+                        <label>Initialisation Vector</label>
+                        <input type="text" id="inputIV" class="form-control" placeholder="OPTIONAL">
+                      </div>
+                      <!-- <select class="form-control">
+                        <option>Option one</option>
+                        <option>Option two</option>
+                        <option>Option three</option>
+                        <option>Option four</option>
+                        <option>Option five</option>
+                        <option>Option six</option>
+                        <option>Option seven</option>
+                        <option>Option eight</option>
+                      </select> -->
+      
+                      <div class="checkbox" style="margin-top: 18px">
+                        <label>
+                          <input type="checkbox" id="cbRandomizeKeys"> Randomize keys for every stream.  <span style="font-weight:bold"> *(Recommended for enhanced security)</span>
+                        </label>
+                      </div>
+                    <!--  <div class="checkbox">
+                        <label>
+                          <input type="checkbox"> This is a checkbox too
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="radios" checked="">
+                          Keep your options open
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" name="radios">
+                          More options
+                        </label>
+                      </div> -->
+                      <div class="form-actions">
+                        <button class="btn btn-form btn-default">Cancel</button>
+                        <button class="btn btn-form btn-primary" id="addKeyInfoBtn">OK</button>
+                      </div>
+                    </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+
         <header class="toolbar toolbar-header draggable-header">
           <div class="title-container">
             <h1 class="title">Encrypted HLS Generator</h1>
@@ -69,6 +134,11 @@
             <button class="btn btn-default" id="btn-unselect">
               <span class="icon icon-minus-circled icon-text"></span>
               Unselect All
+            </button>
+
+            <button class="btn btn-default" id="btn-keyData">
+              <span class="icon icon-key icon-text"></span>
+              Set Key Data
             </button>
 
             <button class="btn btn-default btn-primary" id="btn-export">

@@ -14,6 +14,66 @@ const browseBtn = document.querySelector('.span-browse')
 const deleteBtn = document.getElementById("btn-delete")
 const minimizeBtn = document.getElementById("btn-minimize")
 const closeBtn = document.getElementById("btn-close")
+const keyDataBtn = document.getElementById("btn-keyData")
+
+const inputKeyUrl = document.getElementById('inputKeyUrl')
+const inputKeyPath = document.getElementById('inputKeyPath')
+const inputIV = document.getElementById('inputIV')
+const cbRandomizeKeys = document.getElementById('cbRandomizeKeys')
+const addKeyInfoBtn = document.getElementById('addKeyInfoBtn')
+
+const keyData = {
+  keyUrl: '',
+  keyPath: '',
+  keyIV: ''
+}
+
+const modalKeyInfo = new HystModal();
+
+keyDataBtn.addEventListener('click', () => {
+  modalKeyInfo.open('#modalKeyInfo')
+})
+
+addKeyInfoBtn.addEventListener('click', (e) => {
+  e.preventDefault()
+  const data = validateAddKeyForm()
+  if(data.status == 'complete'){
+    keyData.keyUrl = data.keyUrl
+    keyData.keyPath = data.keyPath
+    keyData.keyIV = data.keyIV
+    console.log(keyData)
+  }
+})
+
+const showErr = (type, err) => {
+  ipc.send('showErr', {
+    type,
+    err
+  })
+}
+
+const validateAddKeyForm = () => {
+  const urlPattern = /^(ftp|http|https):\/\/[^ "]+$/;
+  const data = {status: 'incomplete'}
+  if(!cbRandomizeKeys.checked){
+    if(!inputKeyUrl.value == '' && !(typeof inputKeyPath.files[0] === 'undefined')) {
+      if(urlPattern.test(inputKeyUrl.value)){
+        data['keyUrl'] = inputKeyUrl.value
+        data['keyPath'] = inputKeyPath.files[0].path
+        data['keyIV'] = inputIV.value
+        data.status = 'complete'
+      } else {
+        showErr("InvalidURL", "Please enter a valid URL")
+      }
+    } else {
+      showErr('MissingField', "Please fill all the required fields.")
+    }
+  } else {
+    showErr('NoImplementation', 'This functionality has not been implemented in this version of the software. Please uncheck to continue.')
+  }
+  return data
+}
+
 
 const myModal = new HystModal({
   linkAttributeName: 'data-hystmodal',
@@ -94,18 +154,23 @@ browseBtn.addEventListener('click', ()=>{
 
 exportBtn.addEventListener('click', (e)=>{
   console.log('export clicked')
-  if(validateExport()){
-    const files = []
-  document.querySelectorAll('.list-item').forEach((item)=> {
-    files.push({
-      name: item.innerText,
-      path: item.getAttribute('path')
+  if(!keyData.keyUrl == ''){
+    if(validateExport()){
+      const files = []
+    document.querySelectorAll('.list-item').forEach((item)=> {
+      files.push({
+        name: item.innerText,
+        path: item.getAttribute('path')
+      })
     })
-  })
-  const data = {
-    files: files
-  }
-  ipc.send("generateBundle", data)
+    const data = {
+      files: files,
+      keyData: keyData
+    }
+      ipc.send("generateBundle", data)
+    }
+  } else {
+    modalKeyInfo.open('#modalKeyInfo')
   }
 })
 
