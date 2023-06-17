@@ -42,6 +42,7 @@ addKeyInfoBtn.addEventListener('click', (e) => {
     keyData.keyPath = data.keyPath
     keyData.keyIV = data.keyIV
     console.log(keyData)
+    modalKeyInfo.close()
   }
 })
 
